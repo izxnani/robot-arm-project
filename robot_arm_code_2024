@@ -1,0 +1,112 @@
+#include <Servo.h>
+Servo servo_hand; //0 deg = ตรง / home = 0deg / grab = 70-90deg
+Servo servo_spinning_hand; //0 deg = ตรง / home = 0deg
+Servo servo_arm_four;
+Servo servo_arm_three; //90 deg = ตรง / home = 160deg
+Servo servo_arm_two; //110 deg = ตรง / home = 155deg
+Servo servo_arm_one;
+Servo servo_base;
+const int pingPin = 13;
+int inPin = 12;
+void setup()
+{
+  Serial.begin(9600);  
+  servo_hand.attach(5);
+  servo_spinning_hand.attach(4); 
+  servo_arm_two.attach(3);
+  servo_arm_one.attach(1, 200, 1000);
+  servo_base.attach(0);
+  
+  
+  set_home();
+  delay(200);
+  
+}
+void loop()
+{
+  long duration, cm;
+
+  pinMode(pingPin, OUTPUT);
+
+
+  digitalWrite(pingPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(pingPin, HIGH);
+  delayMicroseconds(5);
+  digitalWrite(pingPin, LOW);
+  pinMode(inPin, INPUT);
+  duration = pulseIn(inPin, HIGH);
+
+  cm = microsecondsToCentimeters(duration);
+
+  Serial.print(cm);
+  Serial.print("cm");
+  Serial.println();
+  delay(100);
+
+  if (cm <= 5) {
+  
+    servo_base.write(35);
+    delay(100);
+    servo_arm_one.write(90);
+    delay(200);
+    servo_arm_two.write(90);
+    delay(300);
+  
+    servo_arm_one.write(120);
+    delay(300);
+    servo_arm_two.write(93);
+    delay(300);
+    servo_hand.write(60);
+    delay(1000);
+    servo_arm_one.write(50);
+    delay(500);
+    
+
+    servo_base.write(120);
+    delay(3000);
+    servo_arm_one.write(150);
+    delay(500);
+    servo_arm_two.write(90);
+    delay(500);
+    servo_hand.write(0);
+    delay(1000);
+    servo_arm_one.write(50);
+    delay(1000);
+    servo_base.write(35);
+    delay(100);
+    servo_arm_one.write(90);
+    delay(200);
+    servo_arm_two.write(90);
+    delay(300);
+    
+  } 
+}
+
+void set_home(){
+
+  
+  servo_arm_one.write(90);
+  delay(1000);
+  servo_arm_two.write(90);
+  delay(1000);
+
+  servo_spinning_hand.write(0);
+
+  servo_base.write(90);
+
+  servo_hand.write(0);
+
+
+
+
+  
+}
+
+long microsecondsToCentimeters(long microseconds)
+{
+// The speed of sound is 340 m/s or 29 microseconds per centimeter.
+// The ping travels out and back, so to find the distance of the
+// object we take half of the distance travelled.
+return microseconds / 29 / 2;
+}
